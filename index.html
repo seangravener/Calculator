@@ -1,13 +1,82 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Calculator</title>
-	<meta charset="UTF-8" />
-</head>
-<body>
-	<div id="app"></div>
+  <head>
+    <title>Calculator</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <div id="calculatorApp" class="container">
+      <div class="calc-body">
+        <div class="calc-screen">
+          <div class="calc-operation" id="operationDisplay">
+            2536 + 419 + !!
+          </div>
+          <div class="calc-typed" id="mainDisplay">
+            2955<span class="blink-me">_</span>
+          </div>
+        </div>
+        <div class="calc-button-row">
+          <div class="button c">C</div>
+          <div class="button l">≠</div>
+          <div class="button l">%</div>
+          <div class="button l">/</div>
+        </div>
+        <div class="calc-button-row">
+          <div class="button">7</div>
+          <div class="button">8</div>
+          <div class="button">9</div>
+          <div class="button l">x</div>
+        </div>
+        <div class="calc-button-row">
+          <div class="button">4</div>
+          <div class="button">5</div>
+          <div class="button">6</div>
+          <div class="button l">−</div>
+        </div>
+        <div class="calc-button-row">
+          <div class="button">1</div>
+          <div class="button">2</div>
+          <div class="button">3</div>
+          <div class="button l">+</div>
+        </div>
+        <div class="calc-button-row">
+          <div class="button">.</div>
+          <div class="button">0</div>
+          <div class="button"><</div>
+          <div class="button l">=</div>
+        </div>
+      </div>
+    </div>
 
-	<script src="src/index.js">
-	</script>
-</body>
+    <div id="app"></div>
+
+    <script src="https://unpkg.com/hotkeys-js/dist/hotkeys.min.js"></script>
+    <script type="text/javascript">
+      hotkeys("ctrl+a,ctrl+b,r,f,1,2,3", function (event, handler) {
+        switch (handler.key) {
+          case "ctrl+a":
+            alert("you pressed ctrl+a!");
+            break;
+          case "ctrl+b":
+            alert("you pressed ctrl+b!");
+            break;
+          case "r":
+            alert("you pressed r!");
+            break;
+          case "f":
+            alert("you pressed f!");
+            break;
+          case "1":
+            alert("you pressed the number 1!");
+            break;
+          default:
+            alert(event);
+        }
+        console.log(event)
+        console.log(handler)
+      });
+    </script>
+    <script type="module" src="src/index.js"></script>
+  </body>
 </html>
