@@ -14,10 +14,10 @@ class Calculator {
     this.currentAnswer = null;
     this.operatorKeys = ["c", "/", "-", "+", "%", "=", "*", "Enter"];
     this.numberKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-    this.activeHotKeys = "";
 
     this.currentInputs = []; // ["1", "0", "0"];
     this.currentOperands = []; // ["100", "+", "100", "+"];
+    this.activeHotKeys = [];
     this.initCalculator();
 
     return this;
@@ -29,8 +29,8 @@ class Calculator {
 
   initHotKeys() {
     this.activeHotKeys = [...this.numberKeys, ...this.operatorKeys];
-    console.log(this.activeHotKeys);
     hotkeys("*", (event) => this.handleKeyPress(event.key));
+    console.log('activeHotkeys: ', this.activeHotKeys);
   }
 
   initClickEvents() {
@@ -40,13 +40,6 @@ class Calculator {
     this.$calcButtons.addEventListener("click", (event) =>
       this.handleKeyPress(event.target.textContent)
     );
-  }
-
-  handleKeyClick(event) {
-    if (event.target.textContent === "1") {
-      console.log("Click!");
-      this.handleKeyPress(event.target.textContent);
-    }
   }
 
   handleKeyPress(key) {
