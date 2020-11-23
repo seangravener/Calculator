@@ -1,7 +1,11 @@
-const Calculator = class {
+import Calculator from './calculator.js'
 
-  constructor() {
-  }
-};
+// const operationDisplay = document.getElementById('operationDisplay')
+// operationDisplay.innerHTML = '2345 + 1234 +'
 
-document.getElementById("app").innerHTML = ``;
+// const mainDisplay = document.getElementById('mainDisplay')
+// mainDisplay.innerHTML = '123.45'
+
+const calc = new Calculator()
+console.log('calc: ')
+console.log(calc)
