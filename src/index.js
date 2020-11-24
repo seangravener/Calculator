@@ -7,5 +7,3 @@ import Calculator from './calculator.js'
 // mainDisplay.innerHTML = '123.45'
 
 const calc = new Calculator()
-console.log(calc)
-

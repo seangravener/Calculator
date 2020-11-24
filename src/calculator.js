@@ -4,33 +4,32 @@ class Calculator {
   }
 
   get displayOperands() {
-    return this.currentOperands.join(" ");
+    return this.answers.join(" ");
+  }
+
+  get currentAnswer() {
+    return [...this.answers].pop() // the last one
   }
 
   constructor() {
     this.el = undefined;
     this.$calcButtons = undefined;
     this.currentOperations = [];
-    this.currentAnswer = null;
     this.operatorKeys = ["c", "/", "-", "+", "%", "=", "*", "Enter"];
     this.numberKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-
-    this.currentInputs = []; // ["1", "0", "0"];
-    this.currentOperands = []; // ["100", "+", "100", "+"];
     this.activeHotKeys = [];
+
+    this.activeOperatorKey = "";
+    this.currentInputs = []; // ["1", "0", "0"];
+    this.answers = [0]; // ["100", "+", "100", "+"]; <-- must change
     this.initCalculator();
 
     return this;
   }
 
-  // calculate {
-  //   operandsDisplay.reduce((currentAnswer, currentOperand) => { })
-  // }
-
   initHotKeys() {
     this.activeHotKeys = [...this.numberKeys, ...this.operatorKeys];
     hotkeys("*", (event) => this.handleKeyPress(event.key));
-    console.log('activeHotkeys: ', this.activeHotKeys);
   }
 
   initClickEvents() {
@@ -43,49 +42,41 @@ class Calculator {
   }
 
   handleKeyPress(key) {
-    // console.log("event.key: ", key);
     if (this.operatorKeys.includes(key)) {
-      this.currentOperands.push(this.currentInputs.join(""), key);
-      console.log("CALCULATE: ", this.calculate());
-      this.render();
+      this.activeOperatorKey = key;
 
-      this.currentInputs = [];
-      console.log("an operator! ... calculate operation!", key);
+      if (this.currentAnswer != 0) {
+        this.answers.push(this.currentAnswer);
+      }
+
+      if (this.activeOperatorKey) {
+        this.answers.push(
+          this.useOperator(
+            this.currentAnswer,
+            parseInt(this.currentInputs.join(""), 10)
+          )
+        );
+        this.currentInputs = `${this.currentAnswer}`.split("");
+        this.currentOperations.push(this.currentAnswer, this.activeOperatorKey)
+      }
+      this.render();
+      this.debug();
     } else if (this.numberKeys.includes(key)) {
-      console.log("push number: ", key);
+      if (this.activeOperatorKey) {
+        this.currentInputs = [];
+        this.activeOperatorKey = "";
+      }
       this.currentInputs.push(key);
       this.render();
+      this.debug();
     }
   }
 
   calculate() {
-    const currentOperator = ''
-
-    return this.currentOperands.reduce((currentAnswer, currentValue) => {
-      const a = parseInt(currentAnswer, 10)
-      const b = parseInt(currentValue, 10)
-
-      console.log(`ca: ${a} | cv: ${b}`);
-      const isOperator = this.operatorKeys.includes(b);
-
-      if (isOperator) {
-        const previousAnswer = a;
-        currentOperator = b;
-
-        if (previousAnswer) {
-          return this.useOperator(
-            this.currentInputs.join(""),
-            operator,
-            a
-          );
-        }
-      }
-
-      return b;
-    }, "");
+    return this.answers.reduce((currentAnswer, currentValue) => {}, "");
   }
 
-  useOperator(currentAnswer, operator, currentValue) {
+  useOperator(currentAnswer, currentValue) {
     const a = parseInt(currentAnswer, 10);
     const b = parseInt(currentValue, 10);
     const operatorMap = {
@@ -96,7 +87,8 @@ class Calculator {
       Enter: (a, b) => console.log("enter"),
     };
 
-    return operatorMap[operator](a, b);
+    return operatorMap[this.activeOperatorKey](a, b);
+    // return this.currentAnswer;
   }
 
   initCalculator() {
@@ -113,6 +105,25 @@ class Calculator {
 
   query(id) {
     return document.getElementById(id);
+  }
+
+  debug() {
+    console.log("activeOperatorKey: ", this.activeOperatorKey);
+    // console.log('activeHotKeys: ', this.activeHotKeys)
+    console.log(
+      "--currentAnswer=",
+      this.currentAnswer,
+      "--currentInputs=",
+      this.currentInputs
+    );
+    console.log(
+      "--answers=",
+      this.answers,
+      "--currentOperations=",
+      this.currentOperations
+    );
+
+    console.log(this);
   }
 }
 
