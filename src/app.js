@@ -1,34 +1,33 @@
-class Calculator {
+import Calculate from './calculate.js';
+
+export default class CalculatorApp {
   get displayInput() {
     return this.currentInputs.join("");
   }
 
   get displayOperands() {
-    return this.answers.join(" ");
+    return this.calcMemory.join(" ");
   }
 
   get currentAnswer() {
-    return [...this.answers].pop();
-  }
-
-  get activeHotKeys() {
-    return [...this.numberKeys, ...this.operatorKeys, ...this.controlKeys];
+    return [...this.calcMemory].pop();
   }
 
   constructor() {
-    // this.calculatorMemory = []
+    this.calculator = new Calculate()
+    console.log(this.calculator)
 
     this.el = undefined;
     this.$calcButtons = undefined;
-    this.currentOperations = [];
-    this.operatorKeys = ["/", "-", "+", "%", "=", "*"];
-    this.numberKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-    this.controlKeys = ["Enter", 'Delete', 'Backspace'];
+    this.calcMemory = [0];
+
     this.resetKeys = ["c"];
+    this.operatorKeys = ["/", "-", "+", "%", "=", "*"];
+    this.controlKeys = ["Enter", "Delete", "Backspace"];
+    this.numberKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
     this.activeOperatorKey = "";
     this.currentInputs = []; // ["1", "0", "0"];
-    this.answers = [0]; // ["100", "+", "100", "+"]; <-- must change
     this.initCalculator();
 
     return this;
@@ -39,8 +38,6 @@ class Calculator {
   }
 
   initClickEvents() {
-    const handleKeyPress = this.handleKeyPress;
-
     this.$calcButtons = this.query("calcButtons");
     this.$calcButtons.addEventListener("click", (event) =>
       this.handleKeyPress(event.target.textContent)
@@ -48,38 +45,46 @@ class Calculator {
   }
 
   handleKeyPress(key) {
+    // Control Key
     if (this.controlKeys.includes(key) && this.activeOperatorKey) {
       console.log("--controlKey=", key);
-      this.answers.push(this.useOperator(
-        this.currentAnswer,
-        parseInt(this.currentInputs.join(""), 10)
-      ))
-      this.render()
+      this.calcMemory.push(
+        this.useOperator(
+          this.currentAnswer,
+          parseInt(this.currentInputs.join(""), 10)
+        )
+      );
+      this.render();
       return;
     }
 
+    // Toggle operator key
     if (this.operatorKeys.includes(key)) {
       this.activeOperatorKey = key;
 
-      if (this.currentAnswer != 0) {
-        this.answers.push(this.currentAnswer);
-      }
+      // if (this.currentAnswer != 0) {
+      //   this.calcMemory.push(this.currentAnswer);
+      // }
 
-      if (this.activeOperatorKey) {
-        this.answers.push(
-          this.useOperator(
-            this.currentAnswer,
-            parseInt(this.currentInputs.join(""), 10)
-          )
-        );
-        this.currentInputs = `${this.currentAnswer}`.split("");
-        this.currentOperations.push(this.currentAnswer, this.activeOperatorKey);
-      }
+      // if (this.activeOperatorKey) {
+      //   this.calcMemory.push(
+      //     this.useOperator(
+      //       this.currentAnswer,
+      //       parseInt(this.currentInputs.join(""), 10)
+      //     )
+      //   );
+      //   this.currentInputs = `${this.currentAnswer}`.split("");
+      //   this.calcMemory.push(this.currentAnswer, this.activeOperatorKey);
+      // }
+
       this.render();
       this.debug();
-    } else if (this.numberKeys.includes(key)) {
+    }
+
+    // Number key
+    else if (this.numberKeys.includes(key)) {
       if (this.activeOperatorKey) {
-        this.reset()
+        // reset keys
       }
       this.currentInputs.push(key);
       this.render();
@@ -88,7 +93,7 @@ class Calculator {
   }
 
   // calculate() {
-  //   return this.answers.reduce((currentAnswer, currentValue) => {}, "");
+  //   return this.calcMemory.reduce((currentAnswer, currentValue) => {}, "");
   // }
 
   // Example for calculation class:
@@ -100,15 +105,16 @@ class Calculator {
   // Example of decimal use:
   // https://github.com/ayoisaiah/javascript-calculator/blob/master/main.js
 
-  useOperator(currentAnswer, currentValue) {
-    const a = parseInt(currentAnswer, 10);
+  useOperator(total, currentValue) {
+    const a = parseInt(total, 10);
     const b = parseInt(currentValue, 10);
     const operatorMap = {
       "*": (a, b) => a * b,
       "-": (a, b) => a - b,
       "/": (a, b) => a / b,
       "+": (a, b) => a + b,
-      Enter: (a, b) => console.log("enter"),
+      "=": (a, b) => a,
+      Enter: (a, b) => a,
     };
 
     return operatorMap[this.activeOperatorKey](a, b);
@@ -127,9 +133,9 @@ class Calculator {
   }
 
   reset() {
-    this.currentInputs = [];
-    this.currentOperations = [];
     this.activeOperatorKey = "";
+    this.currentInputs = [];
+    this.calcMemory = [];
   }
 
   query(id) {
@@ -137,23 +143,17 @@ class Calculator {
   }
 
   debug() {
+    console.log('')
+    console.log('---------------------------------------------')
     console.log("activeOperatorKey: ", this.activeOperatorKey);
-    // console.log('activeHotKeys: ', this.activeHotKeys)
     console.log(
       "--currentAnswer=",
       this.currentAnswer,
       "--currentInputs=",
       this.currentInputs
     );
-    console.log(
-      "--answers=",
-      this.answers,
-      "--currentOperations=",
-      this.currentOperations
-    );
-
+    console.log("--calcMemory=", this.calcMemory);
     console.log(this);
+    console.log('^^^------------------------------------------')
   }
 }
-
-export default Calculator;

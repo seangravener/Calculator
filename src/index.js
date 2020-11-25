@@ -1,9 +1,5 @@
-import Calculator from './calculator.js'
+// import CalculatorApp from './app.js'
+// const calc = new CalculatorApp()
 
-// const operationDisplay = document.getElementById('operationDisplay')
-// operationDisplay.innerHTML = '2345 + 1234 +'
-
-// const mainDisplay = document.getElementById('mainDisplay')
-// mainDisplay.innerHTML = '123.45'
-
-const calc = new Calculator()
+import Calculate from './calculate.js'
+const calc2 = new Calculate()
