@@ -8,16 +8,23 @@ class Calculator {
   }
 
   get currentAnswer() {
-    return [...this.answers].pop() // the last one
+    return [...this.answers].pop();
+  }
+
+  get activeHotKeys() {
+    return [...this.numberKeys, ...this.operatorKeys, ...this.controlKeys];
   }
 
   constructor() {
+    // this.calculatorMemory = []
+
     this.el = undefined;
     this.$calcButtons = undefined;
     this.currentOperations = [];
-    this.operatorKeys = ["c", "/", "-", "+", "%", "=", "*", "Enter"];
+    this.operatorKeys = ["/", "-", "+", "%", "=", "*"];
     this.numberKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-    this.activeHotKeys = [];
+    this.controlKeys = ["Enter", 'Delete', 'Backspace'];
+    this.resetKeys = ["c"];
 
     this.activeOperatorKey = "";
     this.currentInputs = []; // ["1", "0", "0"];
@@ -28,7 +35,6 @@ class Calculator {
   }
 
   initHotKeys() {
-    this.activeHotKeys = [...this.numberKeys, ...this.operatorKeys];
     hotkeys("*", (event) => this.handleKeyPress(event.key));
   }
 
@@ -42,6 +48,16 @@ class Calculator {
   }
 
   handleKeyPress(key) {
+    if (this.controlKeys.includes(key) && this.activeOperatorKey) {
+      console.log("--controlKey=", key);
+      this.answers.push(this.useOperator(
+        this.currentAnswer,
+        parseInt(this.currentInputs.join(""), 10)
+      ))
+      this.render()
+      return;
+    }
+
     if (this.operatorKeys.includes(key)) {
       this.activeOperatorKey = key;
 
@@ -57,14 +73,13 @@ class Calculator {
           )
         );
         this.currentInputs = `${this.currentAnswer}`.split("");
-        this.currentOperations.push(this.currentAnswer, this.activeOperatorKey)
+        this.currentOperations.push(this.currentAnswer, this.activeOperatorKey);
       }
       this.render();
       this.debug();
     } else if (this.numberKeys.includes(key)) {
       if (this.activeOperatorKey) {
-        this.currentInputs = [];
-        this.activeOperatorKey = "";
+        this.reset()
       }
       this.currentInputs.push(key);
       this.render();
@@ -72,9 +87,18 @@ class Calculator {
     }
   }
 
-  calculate() {
-    return this.answers.reduce((currentAnswer, currentValue) => {}, "");
-  }
+  // calculate() {
+  //   return this.answers.reduce((currentAnswer, currentValue) => {}, "");
+  // }
+
+  // Example for calculation class:
+  // https://github.com/WebDevSimplified/Vanilla-JavaScript-Calculator/blob/master/script.js
+
+  // Example of [].reduce()
+  // https://github.com/jamiepollock/js-calculator/blob/master/script.js
+
+  // Example of decimal use:
+  // https://github.com/ayoisaiah/javascript-calculator/blob/master/main.js
 
   useOperator(currentAnswer, currentValue) {
     const a = parseInt(currentAnswer, 10);
@@ -88,7 +112,6 @@ class Calculator {
     };
 
     return operatorMap[this.activeOperatorKey](a, b);
-    // return this.currentAnswer;
   }
 
   initCalculator() {
@@ -101,6 +124,12 @@ class Calculator {
   render() {
     this.query("mainDisplay").innerHTML = this.displayInput;
     this.query("operationDisplay").innerHTML = this.displayOperands;
+  }
+
+  reset() {
+    this.currentInputs = [];
+    this.currentOperations = [];
+    this.activeOperatorKey = "";
   }
 
   query(id) {
