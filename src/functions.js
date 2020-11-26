@@ -7,8 +7,13 @@ const localFunctions = {
   Enter: (a, b) => a,
 };
 
-export default function useFunction(operator, callback) {
-  console.log("op", operator);
-  console.log("func: ", localFunctions[operator]);
-  callback(localFunctions[operator]);
+// export default function useFunction(operator, callback) {
+//   console.log("op", operator);
+//   console.log("func: ", localFunctions[operator]);
+//   callback(localFunctions[operator]);
+// }
+
+export default function useFunction(operator, values) {
+    console.log(`\n--operator=${operator}`, `--values=${values}\n`)
+    return localFunctions[operator](...values)
 }

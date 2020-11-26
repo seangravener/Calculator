@@ -6,7 +6,9 @@ const localConfig = {
 };
 
 export default class Calculate {
-  get answer() {}
+  get answer() {
+    return this.compute();
+  }
 
   get currentInputValue() {
     return this.inputs.join("");
@@ -20,63 +22,79 @@ export default class Calculate {
     this.inputs = `${value}`.split("");
   }
 
-  // if (this.operator) {  memory.store  }
-
   get previousOperand() {
-    return this.memory.recall(1);
-    // .filter((operand) => !this.config.operatorKeys.includes(operand));
+    return this.memory.recall(2);
+    //.filter((operand) => !this.config.operatorKeys.includes(operand));
   }
 
   //   get operator() {}
   //   set operator() {}
 
   constructor() {
-    this.inputs = [0];
+    this.inputs = [];
     this.memory = new Memory();
     this.operator = "";
     this.config = localConfig;
 
-    this.currentOperand = 100;
+    this.currentOperand = 5;
     this.operator = "+";
     this.memory.store(this.currentOperand, this.operator);
 
+    this.currentOperand = 5;
+    this.operator = "*";
+    this.memory.store(this.currentOperand, this.operator);
+
     this.currentOperand = 2;
+    this.operator = "*";
+    this.memory.store(this.currentOperand, this.operator);
+
+    // this.currentOperand = 1;
     // this.operator = "";
     // this.memory.store(this.currentOperand, this.operator);
-    console.log("ansewr: ", this.compute());
     // this.memory.store(this.compute(), this.operator)
 
     console.log(
-      `this.currentInputValue: ${this.currentInputValue}`,
-      this.currentOperand,
-      this.previousOperand,
-      this.operator
+      `this.currentInputValue: ${this.currentInputValue}\n`,
+      `this.currentOperand: ${this.currentOperand}\n`,
+      `this.previousOperand: ${this.previousOperand}\n`,
+      `active operator: ${this.operator}\n\n`
     );
-    console.log(this.memory);
+
+    console.log("mem: ", this.memory);
+    console.log("ansewr: ", this.compute());
 
     // console.log(this.memory);
     // console.log(this.inputs);
     // console.log(this.operator);
-    // console.log("prevOp", this.previousOperand);
   }
 
   save() {
     this.memory.store(this.currentInputValue, this.operator);
   }
-  compute() {
-    // this.memory.reduce()
 
-    // useFunction('*', [1,2,3])
-    // console.log('compute!', useFunction('*', () => {}))
-    return useFunction(this.operator, (calcFunction) => {
-      console.log(calcFunction);
-      calcFunction(this.previousOperand, this.currentOperand);
+  compute() {
+    let localOperator = this.clearOperator();
+    const isOperation = (operand) => this.config.operatorKeys.includes(operand);
+    const memorySnapshot = this.memory.recall();
+
+    return memorySnapshot.reduce((total, item) => {
+      if (isOperation(item)) {
+        localOperator = item;
+        return total;
+      } else if (!isNaN(item)) {
+        return useFunction(localOperator, [total, item]);
+      }
     });
-    // this.useFunction[this.operator](this.previousOperand, this.currentOperand)
   }
 
   clear() {
     this.operator = "";
     this.memory.clear();
+  }
+
+  clearOperator() {
+    const cache = this.operator;
+    this.operator = "";
+    return cache;
   }
 }
