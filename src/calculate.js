@@ -1,36 +1,51 @@
 import Memory from "./memory.js";
 import { calculate } from "./functions/basic.js";
+import Input from "./input.js";
 
 const localConfig = {
   operatorKeys: ["/", "-", "+", "%", "=", "*"],
 };
 
 export default class Calculator {
-  get currentInputValue() {
-    return this.inputs.join("");
+  get answer() {
+    return this.compute().toString();
   }
 
   get currentOperand() {
-    return parseInt(this.currentInputValue, 10);
+    return this.input.value;
   }
 
   set currentOperand(value) {
-    this.inputs = `${value}`.split("");
+    this.input.value = value;
   }
 
   get previousOperand() {
     return this.memory.recall(2);
   }
 
+  get operator() {
+    return this.input.operator || this.memory.recall(1);
+  }
+
+  set operator(symbol) {
+    if (this.memory.length && symbol) {
+      this.memory.set(1, symbol);
+    }
+    this.input.operator = symbol
+  }
+
   constructor() {
-    this.memory = new Memory([]);
     this.config = localConfig;
-    this.inputs = [];
-    this.operator = "";
+    this.memory = new Memory();
+    this.input = new Input();
   }
 
   save() {
-    this.memory.store(this.currentInputValue, this.operator);
+    console.log("save:", [this.input.value, this.operator]);
+
+    this.input.value = this.answer;
+    this.memory.store(this.input.value, this.operator);
+    console.log('mem saved', this.memory.recall());
   }
 
   compute() {
@@ -43,20 +58,19 @@ export default class Calculator {
         localOperator = item;
         return total;
       } else if (!isNaN(item)) {
-        this.currentOperand = calculate(localOperator, [total, item]);
-        return this.currentOperand
+        return calculate(localOperator, [total, item]);
       }
     });
   }
 
   clear() {
-    this.operator = "";
+    this.input.operator = "";
     this.memory.clear();
   }
 
   getAndResetOperator() {
-    const cache = this.operator;
-    this.operator = "";
+    const cache = this.input.operator;
+    this.input.operator = "";
     return cache;
   }
 }

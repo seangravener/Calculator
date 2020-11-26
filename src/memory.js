@@ -1,12 +1,21 @@
 export default class Memory {
+  get length() {
+    return this.memory.length;
+  }
+
   constructor(memory = []) {
     this.memory = memory;
     return this;
   }
 
   store(value, operator) {
-    if (!operator) throw new Error("Please supply an operator");
-    this.memory.push(parseInt(value, 10), operator);
+    this.memory.push(parseFloat(value), operator);
+    return this;
+  }
+
+  set(location, value) {
+    this.memory[this.memory.length - location] = value;
+    return this;
   }
 
   recall(location) {
@@ -15,5 +24,6 @@ export default class Memory {
 
   clear() {
     this.memory = [];
+    return this;
   }
 }
