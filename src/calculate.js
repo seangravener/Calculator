@@ -1,15 +1,11 @@
 import Memory from "./memory.js";
-import useFunction from "./functions.js";
+import { calculate } from "./functions/basic.js";
 
 const localConfig = {
   operatorKeys: ["/", "-", "+", "%", "=", "*"],
 };
 
-export default class Calculate {
-  get answer() {
-    return this.compute();
-  }
-
+export default class Calculator {
   get currentInputValue() {
     return this.inputs.join("");
   }
@@ -24,48 +20,13 @@ export default class Calculate {
 
   get previousOperand() {
     return this.memory.recall(2);
-    //.filter((operand) => !this.config.operatorKeys.includes(operand));
   }
 
-  //   get operator() {}
-  //   set operator() {}
-
   constructor() {
-    this.inputs = [];
-    this.memory = new Memory();
-    this.operator = "";
+    this.memory = new Memory([]);
     this.config = localConfig;
-
-    this.currentOperand = 5;
-    this.operator = "+";
-    this.memory.store(this.currentOperand, this.operator);
-
-    this.currentOperand = 5;
-    this.operator = "*";
-    this.memory.store(this.currentOperand, this.operator);
-
-    this.currentOperand = 2;
-    this.operator = "*";
-    this.memory.store(this.currentOperand, this.operator);
-
-    // this.currentOperand = 1;
-    // this.operator = "";
-    // this.memory.store(this.currentOperand, this.operator);
-    // this.memory.store(this.compute(), this.operator)
-
-    console.log(
-      `this.currentInputValue: ${this.currentInputValue}\n`,
-      `this.currentOperand: ${this.currentOperand}\n`,
-      `this.previousOperand: ${this.previousOperand}\n`,
-      `active operator: ${this.operator}\n\n`
-    );
-
-    console.log("mem: ", this.memory);
-    console.log("ansewr: ", this.compute());
-
-    // console.log(this.memory);
-    // console.log(this.inputs);
-    // console.log(this.operator);
+    this.inputs = [];
+    this.operator = "";
   }
 
   save() {
@@ -73,16 +34,17 @@ export default class Calculate {
   }
 
   compute() {
-    let localOperator = this.clearOperator();
+    let localOperator = this.getAndResetOperator();
     const isOperation = (operand) => this.config.operatorKeys.includes(operand);
-    const memorySnapshot = this.memory.recall();
+    const snapshot = this.memory.recall();
 
-    return memorySnapshot.reduce((total, item) => {
+    return snapshot.reduce((total, item) => {
       if (isOperation(item)) {
         localOperator = item;
         return total;
       } else if (!isNaN(item)) {
-        return useFunction(localOperator, [total, item]);
+        this.currentOperand = calculate(localOperator, [total, item]);
+        return this.currentOperand
       }
     });
   }
@@ -92,7 +54,7 @@ export default class Calculate {
     this.memory.clear();
   }
 
-  clearOperator() {
+  getAndResetOperator() {
     const cache = this.operator;
     this.operator = "";
     return cache;
