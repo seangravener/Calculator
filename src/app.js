@@ -1,14 +1,7 @@
 import Calculator from "./calculate.js";
+import KeyBindings from "./keys.js";
 
 export default class CalculatorApp {
-  get displayInput() {}
-
-  get displayOperands() {}
-
-  get activeAnswer() {
-    this.calculator.memory.recall(1);
-  }
-
   get activeOperator() {
     return this.calculator.operator;
   }
@@ -18,14 +11,10 @@ export default class CalculatorApp {
   }
 
   constructor() {
-    this.resetKeys = ["c"];
-    this.operatorKeys = ["/", "-", "+", "%", "=", "*"];
-    this.controlKeys = ["Enter", "Delete", "Backspace"];
-    this.numberKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
-
-    this.calculator = new Calculator();
     this.el = undefined;
-    this.$calcButtons = undefined;
+    this.calcButtons = undefined;
+    this.calculator = new Calculator();
+    this.keys = new KeyBindings(); // keyBindings;
     this.initCalculator();
 
     // this.currentOperand = 1;
@@ -39,25 +28,26 @@ export default class CalculatorApp {
   }
 
   initClickEvents() {
-    this.$calcButtons = this.query("calcButtons");
-    this.$calcButtons.addEventListener("click", (event) =>
+    this.calcButtons = this.query("calcButtons");
+    this.calcButtons.addEventListener("click", (event) =>
       this.handleKeyPress(event.target.textContent)
     );
   }
 
   handleKeyPress(key) {
+    key = this.keys.new(key)
     // determine what to do based on mode=
 
     // Control Key
-    if (this.controlKeys.includes(key) && this.activeOperator) {
+    if (key.isOfType('controls') && this.activeOperator) {
       console.log("--controlKey=", key);
       this.render();
       return;
     }
 
     // Toggle operator key
-    if (this.operatorKeys.includes(key)) {
-      this.activeOperator = key;
+    if (key.isOfType('operators')) {
+      this.activeOperator = key.value;
 
       if (this.calculator.input.length) {
         this.calculator.save();
@@ -68,12 +58,12 @@ export default class CalculatorApp {
     }
 
     // Number key
-    else if (this.numberKeys.includes(key)) {
-      if (!this.activeOperator) {
-        this.calculator.input.reset()
-        this.activeOperator = this.calculator.operator
-      }
-      this.calculator.input.append(key);
+    else if (key.isOfType('numbers')) {
+      // if (!this.activeOperator) {
+      //   this.calculator.input.reset()
+      //   this.activeOperator = this.calculator.operator
+      // }
+      this.calculator.input.append(key.value);
       this.render();
       this.debug();
     }
@@ -98,7 +88,7 @@ export default class CalculatorApp {
   render() {
     this.query(
       "mainDisplay"
-    ).innerHTML = `${this.activeOperator} ${this.calculator.currentInputValue}`;
+    ).innerHTML = `${this.activeOperator} ${this.calculator.input.value}`;
     this.query("operationDisplay").innerHTML = JSON.stringify(
       this.calculator.memory.recall()
     );
@@ -125,8 +115,6 @@ export default class CalculatorApp {
   }
 
   debug() {
-    console.log("---------------------------------------------");
-    console.log(this);
-    console.log("^^^------------------------------------------");
+    console.log(this.calculator);
   }
 }

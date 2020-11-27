@@ -1,10 +1,7 @@
 import Memory from "./memory.js";
 import { calculate } from "./functions/basic.js";
 import Input from "./input.js";
-
-const localConfig = {
-  operatorKeys: ["/", "-", "+", "%", "=", "*"],
-};
+import KeyBindings from "./keys.js";
 
 export default class Calculator {
   get answer() {
@@ -24,43 +21,52 @@ export default class Calculator {
   }
 
   get operator() {
-    return this.input.operator || this.memory.recall(1);
+    return this.input.operator || this.memory.recall(1) || "";
   }
 
   set operator(symbol) {
+    console.log("--set-operator=", symbol);
     if (this.memory.length && symbol) {
+      console.log("--set-memory=", symbol);
       this.memory.set(1, symbol);
     }
-    this.input.operator = symbol
+    this.input.operator = symbol;
   }
 
   constructor() {
-    this.config = localConfig;
     this.memory = new Memory();
     this.input = new Input();
+    this.keys = new KeyBindings();
   }
 
   save() {
     console.log("save:", [this.input.value, this.operator]);
 
-    this.input.value = this.answer;
     this.memory.store(this.input.value, this.operator);
-    console.log('mem saved', this.memory.recall());
+    this.input.value = this.answer;
+    console.log("mem saved", this.memory.recall());
   }
 
   compute() {
-    let localOperator = this.getAndResetOperator();
-    const isOperation = (operand) => this.config.operatorKeys.includes(operand);
     const snapshot = this.memory.recall();
 
-    return snapshot.reduce((total, item) => {
-      if (isOperation(item)) {
-        localOperator = item;
-        return total;
-      } else if (!isNaN(item)) {
-        return calculate(localOperator, [total, item]);
-      }
-    });
+    return snapshot.length
+      ? snapshot.reduce(this.memoryReducer.bind(this))
+      : "Err. Nothing in memory to compute.";
+  }
+
+  memoryReducer(total, item) {
+    let localValue = 0;
+    let localOperator = this.operator;
+    const key = this.keys.new(item);
+
+    if (key.isOfType("operators")) {
+      localOperator = item;
+      localValue = total;
+    } else if (!isNaN(item)) {
+      localValue = calculate(localOperator, [total, item]);
+    }
+    return localValue;
   }
 
   clear() {
@@ -68,9 +74,9 @@ export default class Calculator {
     this.memory.clear();
   }
 
-  getAndResetOperator() {
-    const cache = this.input.operator;
-    this.input.operator = "";
-    return cache;
+  mode(mode = "") {
+    /**
+     *
+     */
   }
 }

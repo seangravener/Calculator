@@ -1,22 +1,10 @@
-export const keys = {
-  resetKeys: ["c"],
-  operatorKeys: ["/", "-", "+", "%", "=", "*"],
-  controlKeys: ["Enter", "Delete", "Backspace"],
-  numberKeys: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-};
-
-export function getInputTypes() {
-  return keys;
-}
-
-const inputDefaults = { operator: "", history: [] };
 export default class Input {
   get length() {
     return this.history.length;
   }
 
   get value() {
-    return parseFloat(this.history.join(""));
+    return this.history.length ? parseFloat(this.history.join("")) : "";
   }
 
   set value(value) {
@@ -32,15 +20,16 @@ export default class Input {
   }
 
   append(digit) {
-    this.value = `${this.value}${digit}`
+    this.value = `${this.value}${digit}`;
   }
 
-  remove(len) {
-    this.history.pop()
+  remove() {
+    this.history.pop();
   }
 
   reset(state) {
-    Object.assign(this, state || inputDefaults);
+    this.operator = "";
+    Object.assign(this, state || { operator: "", history: [] });
     return this;
   }
 }
