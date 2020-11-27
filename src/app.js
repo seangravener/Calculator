@@ -35,18 +35,36 @@ export default class CalculatorApp {
   }
 
   handleKeyPress(key) {
-    key = this.keys.new(key)
+    // ctrl+a, ctrl+b, =, Enter => compute, save to memory, update display with answer, flag to clear display upon next number
+    // 1, 2, 3 => update input.value
+    // delete, backspace => update input and memory
+    // +, -, / => perform operation
+
+
+
+    key = this.keys.make(key);
     // determine what to do based on mode=
 
+    if (key.press) {
+      key.press(this.calculator);
+      /**
+       * log things
+       * reduce to an action?
+       * reduce to a set of function calls?
+       */
+    } else {
+    }
+
     // Control Key
-    if (key.isOfType('controls') && this.activeOperator) {
+    if (key.type === "controls" && this.activeOperator) {
       console.log("--controlKey=", key);
+
       this.render();
       return;
     }
 
     // Toggle operator key
-    if (key.isOfType('operators')) {
+    if (key.type === "operators") {
       this.activeOperator = key.value;
 
       if (this.calculator.input.length) {
@@ -58,7 +76,7 @@ export default class CalculatorApp {
     }
 
     // Number key
-    else if (key.isOfType('numbers')) {
+    else if (key.type === "numbers") {
       // if (!this.activeOperator) {
       //   this.calculator.input.reset()
       //   this.activeOperator = this.calculator.operator

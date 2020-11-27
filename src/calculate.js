@@ -5,6 +5,8 @@ import KeyBindings from "./keys.js";
 
 export default class Calculator {
   get answer() {
+    this.save()
+    this.input.reset()
     return this.compute().toString();
   }
 
@@ -34,17 +36,20 @@ export default class Calculator {
   }
 
   constructor() {
+    // experiment with modules exporting a new instance() of themselves
+
     this.memory = new Memory();
     this.input = new Input();
     this.keys = new KeyBindings();
+    // this.mode = new Mode();
   }
 
   save() {
-    console.log("save:", [this.input.value, this.operator]);
-
+    // this.mode('hold') // don't accept input
     this.memory.store(this.input.value, this.operator);
-    this.input.value = this.answer;
-    console.log("mem saved", this.memory.recall());
+    this.input.reset('', this.compute());
+
+    return this.input.value
   }
 
   compute() {
@@ -58,7 +63,7 @@ export default class Calculator {
   memoryReducer(total, item) {
     let localValue = 0;
     let localOperator = this.operator;
-    const key = this.keys.new(item);
+    const key = this.keys.key(item);
 
     if (key.isOfType("operators")) {
       localOperator = item;
