@@ -1,9 +1,7 @@
-import Memory from "./memory.js";
-import { calculate } from "./functions/basic.js";
-import Input from "./input.js";
-import KeyBindings from "./keys.js";
+import { input, memory } from "./index.js";
+import { arithmetic } from "../functions/basic.js";
 
-export default class Calculator {
+class Totalizator {
   get answer() {
     this.save()
     this.input.reset()
@@ -36,12 +34,13 @@ export default class Calculator {
   }
 
   constructor() {
+    this.input = input()
+    this.memory = memory()
     // experiment with modules exporting a new instance() of themselves
-
-    this.memory = new Memory();
-    this.input = new Input();
-    this.keys = new KeyBindings();
-    // this.mode = new Mode();
+    // this.memory = new Memory();
+    // this.input = new Input();
+    // this.keys = new KeyBindings();
+    // // this.mode = new Mode();
   }
 
   save() {
@@ -63,13 +62,13 @@ export default class Calculator {
   memoryReducer(total, item) {
     let localValue = 0;
     let localOperator = this.operator;
-    const key = this.keys.key(item);
+    const key = this.input.keys.get(item);
 
     if (key.isOfType("operators")) {
       localOperator = item;
       localValue = total;
     } else if (!isNaN(item)) {
-      localValue = calculate(localOperator, [total, item]);
+      localValue = arithmetic(localOperator, [total, item]);
     }
     return localValue;
   }
@@ -78,10 +77,11 @@ export default class Calculator {
     this.input.operator = "";
     this.memory.clear();
   }
-
-  mode(mode = "") {
-    /**
-     *
-     */
-  }
 }
+
+let _instance = undefined;
+const run = () => {
+  return _instance || (_instance = new Totalizator());
+};
+
+export default run;

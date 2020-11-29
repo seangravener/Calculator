@@ -5,11 +5,10 @@ export const _keyBindings = {
   numbers: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
 };
 
-export const _keyReducers = [
-  { keys: ["Enter", "="], reducer() {} },
-  { keys: ["c"], reducer() {} },
-  { keys: [""], reducer() {} },
-];
+export const _keyReducers = {
+  operators: (result, item) => {},
+  numbers: (result, item) => {},
+};
 
 let _key = "";
 
@@ -25,29 +24,42 @@ export default class KeyBindings {
   get type() {
     if (!this.value) return;
 
-    const types = Object.keys(_keyBindings);
-    return types.reduce((result, type) => {
-      return _keyBindings[type].includes(this.value)
+    return this.types.reduce((result, type) => {
+      return _keyBindings[type].keys.includes(this.value)
         ? `${result} ${type}`.trim()
         : "";
     });
   }
 
-  constructor(key = "", keyBindings = _keyBindings) {
-    // Object.assign(this, keyBindings);
+  get types() {
+    return Object.keys(_keyBindings);
+  }
+
+//   get reducer() {
+//       const keys = _keyBindings[this.type].keys
+//     return keys.reduce(
+//       _keyReducers[this.type].bind(this.calculator)
+//     );
+//   }
+
+  constructor(key = "") {
+    // Object.assign(this, ...state);
     this.value = key;
     this.reducer = undefined;
 
-    this.press = (calc) => {
-      console.log('press!', this.value, this.type)
-      console.log(calc.currentOperand)
-      calc.currentOperand = '222'
-    }
     return this;
   }
 
+  press(calculator) {
+    console.log("press!", this.value, this.type);
+    console.log(calc);
+
+    this.types;
+    _keyReducers[this.value].bind(calculator, this);
+  }
+
   make(key) {
-    return new KeyBindings(key)
+    return new KeyBindings(key);
   }
 
   get(key) {

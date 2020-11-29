@@ -1,9 +1,6 @@
 import KeyBindings from "./keys.js";
 
-const _modes = ["input", "function"];
-let _mode = "input";
-
-export default class Input {
+class Input {
   get length() {
     return this.history.length;
   }
@@ -28,9 +25,9 @@ export default class Input {
     _mode = mode;
   }
 
-  constructor(state) {
+  constructor() {
     this.keys = new KeyBindings();
-    return this.reset(state);
+    return this.reset();
   }
 
   append(digit) {
@@ -48,3 +45,10 @@ export default class Input {
     return this;
   }
 }
+
+let _instance = undefined;
+const run = () => {
+  return _instance || (_instance = new Input());
+};
+
+export default run;
