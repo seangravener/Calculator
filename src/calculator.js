@@ -1,5 +1,5 @@
 import { totalizator, input, memory, ui } from "./lib/index.js";
-import Controller from "./controller.js"
+// import Controller from "./controller.js"
 
 const _modules = {
   input: input(),
@@ -9,6 +9,10 @@ const _modules = {
 };
 
 class App {
+  static inject = [];
+  _1 = 1;
+  stuff = 1;
+
   constructor() {}
 
   debug() {
@@ -22,7 +26,7 @@ class Calculator extends App {
     super();
     Object.assign(this, _modules);
 
-    this.controller = new Controller()
+    // this.controller = new Controller()
     return this;
   }
 }

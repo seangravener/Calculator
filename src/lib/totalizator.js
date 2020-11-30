@@ -43,6 +43,7 @@ class Totalizator {
     // // this.mode = new Mode();
   }
 
+  // move to calculator.js
   save() {
     // this.mode('hold') // don't accept input
     this.memory.store(this.input.value, this.operator);
@@ -73,6 +74,7 @@ class Totalizator {
     return localValue;
   }
 
+  // move to calculator.js
   clear() {
     this.input.operator = "";
     this.memory.clear();

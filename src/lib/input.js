@@ -1,6 +1,6 @@
 import KeyBindings from "./keys.js";
 
-const _history = [];
+let _history = [];
 
 class Input {
   get length() {
@@ -21,6 +21,7 @@ class Input {
 
   constructor() {
     this.keys = new KeyBindings();
+    console.log('input loaded!', this)
     return this.reset();
   }
 
