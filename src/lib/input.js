@@ -1,28 +1,22 @@
 import KeyBindings from "./keys.js";
 
+const _history = [];
+
 class Input {
   get length() {
-    return this.history.length;
+    return _history.length;
   }
 
   get value() {
-    return this.history.length ? parseFloat(this.history.join("")) : "";
+    return _history.length ? parseFloat(_history.join("")) : "";
   }
 
   set value(value) {
-    this.history = `${value}`.split("");
+    _history = `${value}`.split("");
   }
 
   get display() {
     return `${this.operator} ${this.value}`;
-  }
-
-  get mode() {
-    return _mode;
-  }
-
-  set mode(mode) {
-    _mode = mode;
   }
 
   constructor() {
@@ -35,7 +29,7 @@ class Input {
   }
 
   remove() {
-    this.history.pop();
+    _history.pop();
   }
 
   reset(operator = "", value = "") {

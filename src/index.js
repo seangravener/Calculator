@@ -1,5 +1,10 @@
-import App from "./app.js";
-const calc = new App();
+import Calculator from './calculator.js'
+const app = new Calculator()
 
-// import Calculate from './calculate.js'
-// const calc2 = new Calculate()
+app.debug();
+
+app.totalizator.memory.store(11, "+");
+app.memory.store(12, "+");
+console.log(app.memory.recall());
+
+console.log(app.totalizator.answer)
